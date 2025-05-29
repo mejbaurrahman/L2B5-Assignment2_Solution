@@ -106,9 +106,6 @@ DELETE FROM rangers USING (SELECT rangers.ranger_id from rangers
 LEFT JOIN sightings 
 ON rangers.ranger_id = sightings.ranger_id
 WHERE sightings.ranger_id IS NULL
-) AS sighting_nullable_id
-WHERE rangers.ranger_id = sighting_nullable_id.ranger_id
+) AS sighting_nullable_rangers
+WHERE rangers.ranger_id = sighting_nullable_rangers.ranger_id
 
-SELECT * from rangers 
-LEFT JOIN sightings 
-ON rangers.ranger_id = sightings.ranger_id
