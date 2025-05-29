@@ -63,3 +63,52 @@ SELECT name, COUNT(sighting_id) as total_sightings FROM rangers JOIN sightings O
 SELECT common_name FROM species
 LEFT JOIN sightings ON species.species_id = sightings.species_id
 WHERE sightings.species_id IS NULL;
+
+
+--Problem --6 
+
+SELECT 
+    species.common_name, 
+    sightings.sighting_time, 
+    rangers.name
+FROM sightings
+JOIN species ON sightings.species_id = species.species_id
+JOIN rangers  ON sightings.ranger_id = rangers.ranger_id
+ORDER BY sightings.sighting_time DESC
+LIMIT 2;
+
+--Problem --7 
+
+UPDATE species
+SET conservation_status = 'Historic'
+WHERE discovery_date < '1800-01-01';
+
+
+
+--Problem -8
+CREATE OR REPLACE FUNCTION time_of_day(sighting_time TIMESTAMP)
+RETURNS VARCHAR AS $$
+BEGIN
+    IF EXTRACT(HOUR FROM sighting_time) < 12 THEN
+        RETURN 'Morning';
+    ELSIF EXTRACT(HOUR FROM sighting_time) BETWEEN 12 AND 17 THEN
+        RETURN 'Afternoon';
+    ELSE
+        RETURN 'Evening';
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT sighting_id, time_of_day(sighting_time) as time_of_day from sightings;
+
+--Problem -9
+DELETE FROM rangers USING (SELECT rangers.ranger_id from rangers 
+LEFT JOIN sightings 
+ON rangers.ranger_id = sightings.ranger_id
+WHERE sightings.ranger_id IS NULL
+) AS sighting_nullable_id
+WHERE rangers.ranger_id = sighting_nullable_id.ranger_id
+
+SELECT * from rangers 
+LEFT JOIN sightings 
+ON rangers.ranger_id = sightings.ranger_id
